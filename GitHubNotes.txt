@@ -1,0 +1,1 @@
+$ git remote set-url origin http://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@github.com/tong-ming/SimpleGLES.git
