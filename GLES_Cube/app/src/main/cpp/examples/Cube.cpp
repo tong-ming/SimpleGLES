@@ -5,7 +5,8 @@
 #include "Cube.h"
 
 Cube::Cube() {
-
+    mLastTime = 0;
+    angle = 0;
 }
 
 Cube::~Cube() {
@@ -107,20 +108,28 @@ void Cube::Change(int width, int height) {
     glViewport(0, 0, mwidth, mheight);
 }
 
-glm::vec3 lightPos(1.5, 2.0, 1.0);
-glm::vec3 viewPos(5, 5, 5);
+glm::vec3 lightPos(0.0, 0.0, 1.5);
+glm::vec3 viewPos(0, 3, 10);
 
 void Cube::Draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    // update angle
+    float deltaTime = getDeltaTime();
+    angle += (deltaTime);
+    if (angle >= 360.0f) {
+        angle -= 360.0f;
+    }
+
 //    // cube
     glUseProgram(m_ProgramObj);
 //
-    glm::mat4 model = glm::mat4(1.0f);
-    glm::mat4 view = glm::mat4(1.0f);
-    glm::mat4 projection = glm::mat4(1.0f);
+    model = glm::mat4(1.0f);
+    view = glm::mat4(1.0f);
+    projection = glm::mat4(1.0f);
 
-//    model = glm::rotate(model, glm::radians(45.0f), glm::vec3(0.0, 0.7, 1.0));
+//    model = glm::rotate(model, glm::radians(45.0f), glm::vec3(-1.5, 0.7, 1.0));
+    model = glm::rotate(model, angle, glm::vec3(-1.5, 0.7, 1.0));
 //    view = glm::translate(view, glm::vec3(0.0, 0.0, 3.0));
 
     view = glm::lookAt(
@@ -128,7 +137,7 @@ void Cube::Draw() {
             glm::vec3(0, 0, 0), // and looks at the origin
             glm::vec3(0, 1, 0)  // Head is up (set to 0,-1,0 to look upside-down)
     );
-    projection = glm::perspective(glm::radians(45.0f), (float)mwidth/(float)mheight, 5.0f, -40.0f);// 移动近平面与远平面不改变看到的物体形状和大小，仅改变是否看得见
+    projection = glm::perspective(glm::radians(45.0f), (float)mwidth/(float)mheight, 9.0f, -40.0f);// 移动近平面与远平面不改变看到的物体形状和大小，仅改变是否看得见
 
     unsigned int modelLoc = glGetUniformLocation(m_ProgramObj, "model");
     unsigned int viewLoc = glGetUniformLocation(m_ProgramObj, "view");
@@ -167,4 +176,14 @@ void Cube::Draw() {
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 
+}
+float Cube::getDeltaTime() {
+    if (mLastTime == 0) {
+        mLastTime = TimeUtils::currentTimeMillis();
+    }
+    long currentTime = TimeUtils::currentTimeMillis();
+    long elapsedTime = currentTime - mLastTime;
+    float deltaTime = (float) elapsedTime / 1000.0f;
+    mLastTime = currentTime;
+    return deltaTime;
 }

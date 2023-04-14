@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <TimeUtils.h>
 
 class Cube {
 public:
@@ -25,6 +26,13 @@ private:
     GLuint m_ProgramObj, light_ProgramObj;
     int mwidth, mheight;
     GLuint VBO, VAO, lightVAO;
+
+    long mLastTime;
+    float angle = 0;
+    glm::mat4 model, view, projection;
+
+    float getDeltaTime();
+
 
 };
 
